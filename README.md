@@ -1,94 +1,69 @@
-# **APP_NAME**
+# Decision Room
 
-[![pages](https://img.shields.io/badge/live-baditaflorin.github.io%2F__APP_NAME__-__ACCENT_NOHASH__)](https://baditaflorin.github.io/__APP_NAME__/)
-[![version](https://img.shields.io/badge/version-0.1.0-blue)](https://github.com/baditaflorin/__APP_NAME__/blob/main/package.json)
-[![license](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+[![live](https://img.shields.io/badge/live-Decision%20Room-73c7bd)](https://baditaflorin.github.io/mesh-decision-room/)
+[![version](https://img.shields.io/badge/version-0.1.0-344254)](https://github.com/baditaflorin/mesh-decision-room/blob/main/package.json)
+[![license](https://img.shields.io/badge/license-MIT-65c997)](./LICENSE)
 
-> **DESCRIPTION**
+Decision Room is a browser-local, peer-to-peer space for making a small group decision. Add a shared shortlist, rank the options in your own order, and see a deterministic Borda tally update for everyone in the room.
 
-**Live → https://baditaflorin.github.io/__APP_NAME__/**
+**Live:** https://baditaflorin.github.io/mesh-decision-room/
 
-**Source → https://github.com/baditaflorin/__APP_NAME__**
+![Decision Room shortlist and live tally](docs/screenshot.png)
 
-**Tip the dev (buy a coffee) → https://www.paypal.com/paypalme/florinbadita**
+## How it works
 
----
+1. Add the first real option, or use the starter shortlist.
+2. Share the room with the people deciding.
+3. Each person ranks the same options in preference order.
+4. The shared tally identifies the leading choice without an account or central application database.
 
-![screenshot](docs/screenshot.png)
+The first screen is already the decision workflow: it collects a first option and an optional local name instead of presenting a marketing-only landing page.
 
-> Two peers, side-by-side, in the same room. Drop a `tests/demo/scenario.mjs`
-> exporting `default async (a, b) => …` and run `npm run demo` to regenerate
-> `docs/preview.png` plus `docs/demo-a.webm` / `docs/demo-b.webm` clips.
+![Two peers in one decision room](docs/preview.png)
 
-![preview](docs/preview.png)
+## Privacy and rooms
 
-## What it is
+Everything in a room is visible to the people connected to that room: option names, rankings, and optional display names. There are no accounts and no application-owned database. Yjs state exists while peers are connected, and WebRTC carries updates directly between peers when possible.
 
-A **rootless-computing** peer-to-peer browser app. No backend of its own beyond the self-hosted WebRTC stack listed below. State lives in a Yjs mesh shared by everyone in the same room.
+Read the full [privacy note](docs/privacy.md) before using a room for a sensitive decision.
 
-Read the principles → **https://baditaflorin.github.io/rootless-computing/principles.html**
+## Run locally
 
-## Quickstart
-
-Open the live URL on two devices in the same room (set in ⚙ settings, or scan the room QR). Everything else is in-app.
-
-For local hacking:
+Decision Room uses the current `mesh-common` checkout as a sibling dependency.
 
 ```bash
 git clone https://github.com/baditaflorin/mesh-common
-git clone https://github.com/baditaflorin/__APP_NAME__
-cd __APP_NAME__
-npm install
+git clone https://github.com/baditaflorin/mesh-decision-room
+cd mesh-decision-room
+npm ci
 npm run dev
 ```
 
-`mesh-common` must sit as a **sibling** directory because `package.json` references it via `file:../mesh-common`.
+Open the shown local URL in two browser tabs. Give both the same room ID from **Settings**, or use the app’s invite control.
 
-## Self-hosted infrastructure
-
-| Repo                                              | Endpoint                               | Purpose                     |
-| ------------------------------------------------- | -------------------------------------- | --------------------------- |
-| https://github.com/baditaflorin/signaling-server  | `wss://turn.0docker.com/ws`            | y-webrtc signaling fan-out  |
-| https://github.com/baditaflorin/turn-token-server | `https://turn.0docker.com/credentials` | HMAC TURN creds, 1-hour TTL |
-| https://github.com/baditaflorin/coturn-hetzner    | `turn:turn.0docker.com:3479`           | TURN relay                  |
-
-## Settings overrides
-
-The settings drawer lets the user override signaling and TURN endpoints. localStorage keys:
-
-- `__APP_NAME__:signalingUrl`
-- `__APP_NAME__:turnTokenUrl`
-- `__APP_NAME__:iceServers`
-- `__APP_NAME__:room`
-
-If endpoints are blank or unreachable, the app falls back to STUN-only.
-
-## Version + commit on every screen
-
-The bottom-right footer on every screen of the live app shows:
-
-- `source` → this repo
-- `tip ♥` → PayPal
-- `vX.Y.Z · <short-sha>` — version from `package.json` plus the build-time git commit
-
-## Build & deploy
-
-GitHub Pages serves the committed `docs/` directory on the `main` branch. There is no GitHub Actions build workflow; local Husky-style hooks gate formatting / typecheck / smoke build before each push.
+## Verify a change
 
 ```bash
-npm run smoke                                    # build + sanity-check docs/
-bash ../mesh-common/scripts/screenshot-app.sh    # regenerate docs/screenshot.png
+npm run fmt:check
+npm run typecheck
+npm run test:unit
+npm run smoke
+npm run test:e2e
+npm run audit:security
 ```
 
-## Privacy
+GitHub Pages serves the committed `docs/` directory from `main`. `npm run smoke` rebuilds that directory, including the SPA fallback at `docs/404.html`.
 
-<!-- mesh:privacy-section:start -->
+## Infrastructure
 
-Everything you publish to a room is visible to every peer in that room. Your local device's name, key, and choices stay local. Cryptographic signatures prove **who** wrote each entry; they do **not** prevent peers from reading or copying entries. The room URL is the access control — share it deliberately.
+| Endpoint                               | Purpose                             |
+| -------------------------------------- | ----------------------------------- |
+| `wss://turn.0docker.com/ws`            | WebRTC signaling fan-out            |
+| `https://turn.0docker.com/credentials` | Short-lived TURN credentials        |
+| `turn:turn.0docker.com:3479`           | Relay fallback for restrictive NATs |
 
-See `docs/privacy.md` for the full threat model — capabilities used, what other peers in the mesh see, what the self-hosted infra sees, what stays local.
-<!-- mesh:privacy-section:end -->
+The Settings drawer lets a person override signaling and TURN endpoints on their own device. Blank or unreachable overrides fall back to STUN-only behavior.
 
 ## License
 
-MIT — see `LICENSE`.
+[MIT](./LICENSE)

@@ -1,24 +1,39 @@
 import { describe, expect, it } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createMockRoom } from "@baditaflorin/mesh-common/testing";
 import { Feature } from "../../src/Feature";
 import { config } from "../../src/config";
 
 describe("Feature (component)", () => {
-  it("renders the app name when connected", () => {
+  it("turns the first entry into a real shared shortlist action", () => {
     const room = createMockRoom();
     render(<Feature room={room} config={config} />);
-    // Most apps show their human label in an <h1>. Allow either the config
-    // appName or any first-level heading to be present.
-    const heading = screen.getAllByRole("heading", { level: 1 })[0];
-    expect(heading).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "What should we choose?" }),
+    ).toBeInTheDocument();
+    const add = screen.getByRole("button", { name: "Add this option" });
+    expect(add).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("First option"), {
+      target: { value: "The courtyard table" },
+    });
+    expect(add).toBeEnabled();
+    fireEvent.click(add);
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Make the call with clarity." }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByText("The courtyard table").length).toBeGreaterThan(0);
   });
 
-  it("shows a connecting state when room is null", () => {
+  it("keeps a recognizable, honest entry state while the room connects", () => {
     render(<Feature room={null} config={config} />);
-    // Most templates show "Connecting…" while the room is null. Apps with a
-    // custom waiting state can override this test.
-    const heading = screen.getAllByRole("heading", { level: 1 })[0];
-    expect(heading).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { level: 1, name: "What should we choose?" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Opening your room…")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add this option" })).toBeDisabled();
   });
 });

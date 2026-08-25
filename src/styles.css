@@ -1,5 +1,6 @@
-/* App-local styles. Mesh chrome (settings drawer, self-ref bar) is provided by
- * @baditaflorin/mesh-common/styles.css imported in main.tsx. */
+/* Mesh chrome and primitives are supplied by mesh-common. This file gives the
+ * decision workflow its own calm, editorial workspace rather than a template
+ * screen layered over the shared shell. */
 
 :root {
   color-scheme: dark;
@@ -12,40 +13,639 @@
 html,
 body,
 #root {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
-  background: var(--mesh-bg);
-  color: var(--mesh-fg);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--mesh-canvas);
+  color: var(--mesh-text);
+  font-family: var(--mesh-font-sans);
   -webkit-tap-highlight-color: transparent;
 }
 
-.feature-placeholder {
-  padding: 6rem 1.5rem 2rem;
-  text-align: center;
+button,
+input {
+  font: inherit;
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--mesh-focus-ring, var(--mesh-accent));
+  outline-offset: 3px;
+}
+
+.mesh-app-root[data-mesh-shell-layout="inset"] .mesh-app-content {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+.decision-room {
+  position: relative;
+  min-width: 0;
+  min-height: 100%;
+  overflow: hidden;
+  padding: clamp(1rem, 3vw, 2.5rem);
+  background:
+    radial-gradient(circle at 84% 2%, rgb(115 199 189 / 12%), transparent 22rem),
+    linear-gradient(180deg, rgb(255 255 255 / 1.5%), transparent 12rem);
+}
+
+.decision-room::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(to right, rgb(174 226 220 / 4%) 1px, transparent 1px);
+  background-size: clamp(4rem, 10vw, 8rem) 100%;
+  content: "";
+}
+
+.decision-room > * {
+  position: relative;
+  z-index: 1;
+}
+
+.decision-room-entry {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+  justify-content: stretch;
 }
 
-.feature-placeholder h1 {
-  font-size: 1.6rem;
-  margin: 0;
+.decision-launch.mesh-launch {
+  width: min(100%, 57rem);
+  min-height: 100%;
+  margin: 0 auto;
+  border: 1px solid color-mix(in srgb, var(--mesh-border) 86%, var(--mesh-accent));
+  border-radius: clamp(1.2rem, 2.5vw, 1.85rem);
+  padding: clamp(1.25rem, 4vh, 3rem) clamp(1rem, 5vw, 3.75rem);
+  background: linear-gradient(120deg, rgb(115 199 189 / 9%), transparent 34%), var(--mesh-surface);
+  box-shadow: 0 1.75rem 4.25rem rgb(0 12 20 / 30%);
+}
+
+.decision-launch .mesh-launch-content {
+  width: min(100%, 46rem);
+  gap: clamp(0.7rem, 1.8vh, 1.1rem);
+}
+
+.decision-launch .mesh-launch-header {
+  gap: 0.5rem;
+}
+
+.decision-launch .mesh-launch-eyebrow,
+.decision-kicker,
+.decision-panel-label {
   color: var(--mesh-accent);
+  font-size: 0.68rem;
+  font-weight: 760;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
-.feature-placeholder p {
-  max-width: 32rem;
+.decision-launch .mesh-launch-eyebrow,
+.decision-kicker,
+.decision-panel-label {
   margin: 0;
-  opacity: 0.85;
+}
+
+.decision-launch .mesh-launch-header h1 {
+  max-width: 14ch;
+  font-size: clamp(2.15rem, 5vw, 4.25rem);
+  letter-spacing: -0.058em;
+  line-height: 0.98;
+}
+
+.decision-launch .mesh-launch-promise {
+  max-width: 43rem;
+  color: color-mix(in srgb, var(--mesh-text-muted) 92%, var(--mesh-text));
+  font-size: clamp(0.94rem, 1.8vw, 1.08rem);
+  line-height: 1.48;
+}
+
+.decision-launch-preview {
+  display: grid;
+  gap: 0.7rem;
+  border-top: 1px solid color-mix(in srgb, var(--mesh-border) 70%, transparent);
+  padding-top: 0.8rem;
+}
+
+.decision-launch-context {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+  color: var(--mesh-text-muted);
+  font-size: 0.81rem;
+}
+
+.decision-field {
+  display: grid;
+  min-width: 0;
+  gap: 0.35rem;
+}
+
+.decision-field > span {
+  color: var(--mesh-text-muted);
+  font-size: 0.78rem;
+  font-weight: 670;
+}
+
+.decision-field input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--mesh-border);
+  border-radius: 0.72rem;
+  padding: 0.73rem 0.85rem;
+  background: color-mix(in srgb, var(--mesh-canvas) 58%, var(--mesh-surface));
+  color: var(--mesh-text);
+  line-height: 1.2;
+}
+
+.decision-field input::placeholder {
+  color: color-mix(in srgb, var(--mesh-text-muted) 80%, transparent);
+}
+
+.decision-field input:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.decision-launch .mesh-name-input-field,
+.decision-name-input .mesh-name-input-field {
+  border-color: var(--mesh-border);
+  border-radius: 0.72rem;
+  background: color-mix(in srgb, var(--mesh-canvas) 58%, var(--mesh-surface));
+}
+
+.decision-launch .mesh-launch-actions {
+  gap: 0.65rem;
+}
+
+.decision-launch .mesh-launch-action {
+  min-height: 2.9rem;
+  border-radius: 0.78rem;
+  padding: 0.72rem 0.95rem;
+}
+
+.decision-launch .mesh-launch-action-primary {
+  box-shadow: 0 0.65rem 1.8rem rgb(115 199 189 / 18%);
+}
+
+.decision-live-note {
+  min-height: 1.1rem;
+  margin: 0;
+  color: var(--mesh-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.decision-live-note:empty {
+  display: none;
+}
+
+.decision-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 22rem);
+  align-items: end;
+  gap: 1.5rem 2rem;
+  max-width: 76rem;
+  margin: 0 auto 1.15rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--mesh-border) 72%, transparent);
+  padding-bottom: 1.15rem;
+}
+
+.decision-header-copy {
+  min-width: 0;
+}
+
+.decision-header h1,
+.decision-panel h2 {
+  margin: 0;
+  color: var(--mesh-text);
+}
+
+.decision-header h1 {
+  max-width: 16ch;
+  font-size: clamp(2rem, 4vw, 3.75rem);
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.decision-header-copy > p:last-child {
+  max-width: 42rem;
+  margin: 0.7rem 0 0;
+  color: var(--mesh-text-muted);
+  font-size: 0.97rem;
   line-height: 1.5;
 }
 
-.feature-status {
-  font-size: 0.85rem;
-  opacity: 0.6;
+.decision-header-meta {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  justify-content: end;
+  gap: 0.5rem;
+}
+
+.decision-name-input {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: 22rem;
+}
+
+.decision-name-input .mesh-name-input-label {
+  color: var(--mesh-text-muted);
+  font-size: 0.73rem;
+}
+
+.decision-board {
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(0, 0.94fr);
+  align-items: start;
+  gap: 1rem;
+  width: min(100%, 76rem);
+  margin: 0 auto;
+}
+
+.decision-tally-wrap {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.decision-panel {
+  min-width: 0;
+  border-radius: 1rem;
+}
+
+.decision-panel-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.decision-panel h2 {
+  margin-top: 0.2rem;
+  font-size: clamp(1.23rem, 2vw, 1.52rem);
+  letter-spacing: -0.032em;
+  line-height: 1.1;
+}
+
+.decision-add-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+
+.decision-add-row .mesh-button {
+  min-height: 2.77rem;
+  white-space: nowrap;
+}
+
+.decision-options,
+.decision-rank-list,
+.decision-score-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.decision-options {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.decision-option-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  border-top: 1px solid color-mix(in srgb, var(--mesh-border) 62%, transparent);
+  padding: 0.55rem 0;
+}
+
+.decision-option-index,
+.decision-score-position,
+.decision-rank-number {
+  color: var(--mesh-accent);
+  font-size: 0.72rem;
   font-variant-numeric: tabular-nums;
+  font-weight: 760;
+  letter-spacing: 0.05em;
+}
+
+.decision-option-label,
+.decision-rank-label,
+.decision-score-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.decision-option-label {
+  color: var(--mesh-text);
+  font-size: 0.92rem;
+  font-weight: 650;
+}
+
+.decision-option-row .mesh-button {
+  color: var(--mesh-text-muted);
+}
+
+.decision-panel-intro {
+  max-width: 38rem;
+  margin: 1.05rem 0 0;
+  color: var(--mesh-text-muted);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.decision-rank-list {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.decision-rank-list .mesh-button {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) auto;
+  justify-content: start;
+  gap: 0.55rem;
+  border-color: color-mix(in srgb, var(--mesh-border) 76%, transparent);
+  padding: 0.7rem 0.75rem;
+  text-align: left;
+}
+
+.decision-rank-list .mesh-button-quiet {
+  background: color-mix(in srgb, var(--mesh-surface-raised) 46%, transparent);
+}
+
+.decision-rank-list .is-ranked .mesh-button {
+  border-color: color-mix(in srgb, var(--mesh-accent) 56%, var(--mesh-border));
+  background: color-mix(in srgb, var(--mesh-accent) 11%, var(--mesh-surface-raised));
+}
+
+.decision-rank-label {
+  color: var(--mesh-text);
+  font-size: 0.9rem;
+  font-weight: 660;
+}
+
+.decision-rank-action {
+  color: var(--mesh-text-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.decision-ranking > .mesh-button:last-child {
+  margin-top: 0.75rem;
+}
+
+.decision-tally {
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.8fr) minmax(0, 1.2fr);
+  align-items: start;
+  gap: 1rem 1.5rem;
+}
+
+.decision-tally .decision-panel-heading {
+  grid-column: 1 / -1;
+}
+
+.decision-tally .mesh-button-quiet {
+  border-color: color-mix(in srgb, var(--mesh-border) 68%, transparent);
+}
+
+.decision-leading {
+  min-width: 0;
+  border-left: 2px solid var(--mesh-accent);
+  padding: 0.2rem 0 0.2rem 0.8rem;
+}
+
+.decision-leading > span {
+  display: block;
+  color: var(--mesh-text-muted);
+  font-size: 0.72rem;
+  font-weight: 740;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.decision-leading strong {
+  display: block;
+  margin-top: 0.38rem;
+  overflow-wrap: anywhere;
+  color: var(--mesh-text);
+  font-size: clamp(1.25rem, 2.5vw, 2rem);
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+}
+
+.decision-leading p {
+  margin: 0.42rem 0 0;
+  color: var(--mesh-text-muted);
+  font-size: 0.82rem;
+}
+
+.decision-leading-empty {
+  border-left-color: var(--mesh-border);
+}
+
+.decision-score-list {
+  display: grid;
+  gap: 0.16rem;
+  margin-top: 0;
+}
+
+.decision-score-list li {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--mesh-border) 57%, transparent);
+  padding: 0.48rem 0;
+}
+
+.decision-score-label {
+  color: var(--mesh-text);
+  font-size: 0.87rem;
+  font-weight: 650;
+}
+
+.decision-score-value {
+  color: var(--mesh-text-muted);
+  font-size: 0.77rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (min-width: 36.0625rem) and (max-height: 44rem) {
+  .decision-room-entry {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .decision-launch.mesh-launch {
+    padding: 1rem clamp(1.25rem, 4vw, 2.5rem);
+  }
+
+  .decision-launch .mesh-launch-content {
+    gap: 0.5rem;
+  }
+
+  .decision-launch .mesh-launch-header h1 {
+    font-size: clamp(2rem, 4vw, 3.1rem);
+  }
+
+  .decision-launch .mesh-launch-promise {
+    font-size: 0.89rem;
+    line-height: 1.35;
+  }
+
+  .decision-launch-preview {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    column-gap: 0.9rem;
+    padding-top: 0.55rem;
+  }
+
+  .decision-launch-context {
+    grid-column: 1 / -1;
+  }
+
+  .decision-launch-preview .mesh-name-input-hint {
+    display: none;
+  }
+
+  .decision-launch .mesh-launch-action {
+    min-height: 2.55rem;
+    padding: 0.55rem 0.82rem;
+  }
+
+  .decision-header {
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+
+  .decision-header h1 {
+    font-size: clamp(1.8rem, 3.1vw, 2.65rem);
+  }
+
+  .decision-header-copy > p:last-child {
+    margin-top: 0.45rem;
+    font-size: 0.86rem;
+  }
+}
+
+@media (max-width: 50rem) {
+  .decision-header {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-header-meta {
+    justify-content: start;
+  }
+
+  .decision-board {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-tally-wrap {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 36rem) {
+  .decision-room {
+    padding: 0.7rem;
+  }
+
+  .decision-launch.mesh-launch {
+    min-height: 100%;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+
+  .decision-launch .mesh-launch-content {
+    gap: 0.62rem;
+  }
+
+  .decision-launch .mesh-launch-header h1 {
+    font-size: clamp(2.05rem, 10.3vw, 2.65rem);
+  }
+
+  .decision-launch .mesh-launch-promise {
+    font-size: 0.91rem;
+    line-height: 1.38;
+  }
+
+  .decision-launch-preview {
+    gap: 0.58rem;
+    padding-top: 0.6rem;
+  }
+
+  .decision-launch-preview .mesh-name-input-hint {
+    display: none;
+  }
+
+  .decision-launch .mesh-launch-action {
+    min-height: 2.65rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .decision-header {
+    gap: 0.9rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.9rem;
+  }
+
+  .decision-header h1 {
+    font-size: clamp(1.9rem, 10vw, 2.55rem);
+  }
+
+  .decision-header-copy > p:last-child {
+    font-size: 0.9rem;
+  }
+
+  .decision-add-row,
+  .decision-tally {
+    grid-template-columns: 1fr;
+  }
+
+  .decision-add-row .mesh-button {
+    width: 100%;
+  }
+
+  .decision-tally .decision-panel-heading {
+    grid-column: auto;
+  }
+
+  .decision-option-row {
+    grid-template-columns: 1.8rem minmax(0, 1fr);
+  }
+
+  .decision-option-row .mesh-button {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .decision-rank-list .mesh-button {
+    grid-template-columns: 1.65rem minmax(0, 1fr);
+  }
+
+  .decision-rank-action {
+    grid-column: 2;
+  }
+
+  .decision-score-list {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decision-room,
+  .decision-room * {
+    scroll-behavior: auto;
+  }
 }
