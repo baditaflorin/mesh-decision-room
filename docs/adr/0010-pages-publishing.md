@@ -11,7 +11,7 @@ GitHub Pages will serve the live app. There are three publishing strategies: `ma
 
 Publish from **`main` branch, `/docs` folder**.
 
-- Vite is configured with `base: "/__APP_NAME__/"` and `build.outDir: "docs"`.
+- Vite is configured with `base: "/mesh-decision-room/"` and `build.outDir: "docs"`.
 - `docs/index.html` is copied to `docs/404.html` as the SPA fallback (GitHub Pages doesn't support `_redirects`).
 - `docs/` is **not** gitignored — the committed build output is the deploy.
 - No GitHub Actions; Husky pre-push hook runs `npm run smoke` which rebuilds `docs/`.
