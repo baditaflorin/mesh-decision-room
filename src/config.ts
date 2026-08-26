@@ -2,6 +2,7 @@ import { createMeshConfig } from "@baditaflorin/mesh-common";
 
 export const config = createMeshConfig({
   appName: "mesh-decision-room",
+  breadcrumbs: false,
   displayName: "Decision Room",
   visualProfile: "utility",
   shellLayout: "inset",
