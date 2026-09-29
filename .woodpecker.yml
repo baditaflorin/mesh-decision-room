@@ -2,6 +2,9 @@ steps:
   verify:
     image: node:22
     commands:
+      - git clone --depth 1 --filter=blob:none --sparse https://github.com/baditaflorin/mesh-common.git ../mesh-common
+      - git -C ../mesh-common sparse-checkout set --cone src testing scaffold scripts presets
+      - npm ci --prefix ../mesh-common
       - npm ci
       - npm run fmt:check
       - npm run typecheck
