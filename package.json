@@ -52,9 +52,12 @@
     "prettier": "^3.7.4",
     "typescript": "^5.9.3",
     "vite": "^7.0.0",
-    "vitest": "^3.2.6"
+    "vitest": "4.1.11"
   },
   "engines": {
     "node": ">=22"
+  },
+  "overrides": {
+    "@vitest/mocker": "4.1.11"
   }
 }
